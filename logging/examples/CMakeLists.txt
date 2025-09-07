@@ -1,0 +1,4 @@
+cmake_minimum_required(VERSION 3.10)
+
+add_executable(example_logger example_logger.cpp)
+target_link_libraries(example_logger utoolkit_logging)

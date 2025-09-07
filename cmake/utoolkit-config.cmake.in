@@ -1,0 +1,12 @@
+@PACKAGE_INIT@
+
+include(CMakeFindDependencyMacro)
+
+# 查找依赖
+find_dependency(Threads REQUIRED)
+
+# 包含目标
+include("${CMAKE_CURRENT_LIST_DIR}/utoolkit-targets.cmake")
+
+# 检查所有目标是否可用
+check_required_components(utoolkit)
