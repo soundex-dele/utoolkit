@@ -34,14 +34,14 @@ target_compile_features(utoolkit_task_queue PRIVATE cxx_std_17)
 
 # 安装规则
 install(TARGETS utoolkit_task_queue
-    EXPORT utoolkit_task_queue_targets
+    EXPORT utoolkit-targets
     ARCHIVE DESTINATION lib
     LIBRARY DESTINATION lib
     RUNTIME DESTINATION bin
 )
 
-install(DIRECTORY include/
-    DESTINATION include
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/
+    DESTINATION include/utoolkit/task_queue
     FILES_MATCHING PATTERN "*.h"
 )
 

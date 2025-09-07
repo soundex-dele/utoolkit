@@ -10,7 +10,7 @@ set(UTOOLKIT_VERSION_MINOR 0)
 set(UTOOLKIT_VERSION_PATCH 0)
 
 # 选项
-option(UTOOLKIT_BUILD_EXAMPLES "Build examples" ON)
+option(UTOOLKIT_BUILD_EXAMPLES "Build examples" OFF)
 option(UTOOLKIT_BUILD_TESTS "Build tests" OFF)
 option(UTOOLKIT_INSTALL "Enable installation" ON)
 
@@ -29,6 +29,7 @@ target_link_libraries(utoolkit INTERFACE
     utoolkit_logging
     utoolkit_threadpool
     utoolkit_utils
+    utoolkit_task_queue
 )
 
 # 包含目录
@@ -73,4 +74,8 @@ endif()
 # 测试由各个模块自行管理
 if(UTOOLKIT_BUILD_TESTS)
     enable_testing()
+    set(LOGGING_BUILD_TESTS ON)
+    set(THREADPOOL_BUILD_TESTS ON)
+    set(TASK_QUEUE_BUILD_TESTS ON)
+    set(UTILS_BUILD_TESTS ON)
 endif()

@@ -27,8 +27,8 @@ install(TARGETS utoolkit_logging
     RUNTIME DESTINATION bin
 )
 
-install(DIRECTORY include/utoolkit
-    DESTINATION include
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/
+    DESTINATION include/utoolkit/logging
     FILES_MATCHING PATTERN "*.h"
 )
 

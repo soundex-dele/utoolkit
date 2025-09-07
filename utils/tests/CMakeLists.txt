@@ -13,7 +13,13 @@ if(NOT GTest_FOUND)
     set(GTEST_MAIN_LIBRARIES gtest_main)
 endif()
 
-# 添加各个模块的测试
-add_subdirectory(${CMAKE_SOURCE_DIR}/logging/cmake ${CMAKE_BINARY_DIR}/logging_tests)
-add_subdirectory(${CMAKE_SOURCE_DIR}/threadpool/cmake ${CMAKE_BINARY_DIR}/threadpool_tests)
-add_subdirectory(${CMAKE_SOURCE_DIR}/utils/cmake ${CMAKE_BINARY_DIR}/utils_tests)
+# 添加utils模块的测试
+file(GLOB TEST_SOURCES "*.cpp")
+add_executable(utils_tests ${TEST_SOURCES})
+target_link_libraries(utils_tests 
+    gtest 
+    gtest_main 
+    utoolkit_utils
+)
+target_compile_features(utils_tests PRIVATE cxx_std_17)
+target_include_directories(utils_tests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/..)

@@ -29,8 +29,8 @@ install(TARGETS utoolkit_utils
     RUNTIME DESTINATION bin
 )
 
-install(DIRECTORY include/utoolkit
-    DESTINATION include
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/
+    DESTINATION include/utoolkit/utils
     FILES_MATCHING PATTERN "*.h"
 )
 
