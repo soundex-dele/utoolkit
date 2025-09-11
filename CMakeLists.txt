@@ -15,7 +15,7 @@ option(UTOOLKIT_BUILD_TESTS "Build tests" OFF)
 option(UTOOLKIT_INSTALL "Enable installation" ON)
 
 # 第三方依赖
-# add_subdirectory(third_party)
+add_subdirectory(third_party)
 
 # 添加子模块
 add_subdirectory(logging)
@@ -30,6 +30,7 @@ target_link_libraries(utoolkit INTERFACE
     utoolkit_threadpool
     utoolkit_utils
     utoolkit_task_queue
+        spdlog_interface
 )
 
 # 包含目录
@@ -47,23 +48,23 @@ if(UTOOLKIT_INSTALL)
         RUNTIME DESTINATION bin
     )
     
-    install(EXPORT utoolkit-targets
-        FILE utoolkit-targets.cmake
-        NAMESPACE utoolkit::
-        DESTINATION lib/cmake/utoolkit
-    )
-    
-    include(CMakePackageConfigHelpers)
-    configure_package_config_file(
-        ${CMAKE_CURRENT_SOURCE_DIR}/cmake/utoolkit-config.cmake.in
-        ${CMAKE_CURRENT_BINARY_DIR}/utoolkit-config.cmake
-        INSTALL_DESTINATION lib/cmake/utoolkit
-    )
-    
-    install(FILES
-        ${CMAKE_CURRENT_BINARY_DIR}/utoolkit-config.cmake
-        DESTINATION lib/cmake/utoolkit
-    )
+#    install(EXPORT utoolkit-targets
+#        FILE utoolkit-targets.cmake
+#        NAMESPACE utoolkit::
+#        DESTINATION lib/cmake/utoolkit
+#    )
+#
+#    include(CMakePackageConfigHelpers)
+#    configure_package_config_file(
+#        ${CMAKE_CURRENT_SOURCE_DIR}/cmake/utoolkit-config.cmake.in
+#        ${CMAKE_CURRENT_BINARY_DIR}/utoolkit-config.cmake
+#        INSTALL_DESTINATION lib/cmake/utoolkit
+#    )
+#
+#    install(FILES
+#        ${CMAKE_CURRENT_BINARY_DIR}/utoolkit-config.cmake
+#        DESTINATION lib/cmake/utoolkit
+#    )
 endif()
 
 # 全局示例
