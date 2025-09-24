@@ -1,0 +1,52 @@
+{
+  "platform": "auto",
+  "build_type": "Debug",
+  "modules": {
+    "logging": {
+      "enabled": true,
+      "tests": true,
+      "examples": true
+    },
+    "threadpool": {
+      "enabled": true,
+      "tests": true,
+      "examples": true
+    },
+    "utils": {
+      "enabled": true,
+      "tests": true,
+      "examples": true
+    }
+  },
+  "third_party": {
+    "fmt": {
+      "enabled": true,
+      "examples": true
+    },
+    "spdlog": {
+      "enabled": true,
+      "examples": true
+    },
+    "googletest": {
+      "enabled": true,
+      "tests": true
+    },
+    "benchmark": {
+      "enabled": true,
+      "examples": true
+    },
+    "poco": {
+      "enabled": true,
+      "examples": true
+    }
+  },
+  "cmake_options": {
+    "CMAKE_INSTALL_PREFIX": "/usr/local",
+    "UTOOLKIT_BUILD_TESTS": true,
+    "UTOOLKIT_BUILD_EXAMPLES": true,
+    "BUILD_SHARED_LIBS": false,
+    "CMAKE_CXX_STANDARD": 17,
+    "CMAKE_CXX_STANDARD_REQUIRED": true,
+    "CMAKE_CXX_EXTENSIONS": false
+  }
+}
