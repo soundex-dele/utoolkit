@@ -12,7 +12,7 @@ add_library(utoolkit_logging STATIC ${LOGGING_SOURCES})
 
 target_include_directories(utoolkit_logging
     PUBLIC
-    ../third_party/spdlog/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/../third_party/spdlog/include
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include>
 )

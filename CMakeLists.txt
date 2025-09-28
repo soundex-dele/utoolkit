@@ -18,7 +18,7 @@ option(UTOOLKIT_INSTALL "Enable installation" ON)
 # add_subdirectory(third_party)
 
 # 添加子模块
-#add_subdirectory(logging)
+add_subdirectory(logging)
 #add_subdirectory(threadpool)
 # add_subdirectory(utils)
 add_subdirectory(task_queue)
@@ -26,7 +26,7 @@ add_subdirectory(task_queue)
 # 主库 - 头文件集合
 add_library(utoolkit INTERFACE)
 target_link_libraries(utoolkit INTERFACE
-    #utoolkit_logging
+    utoolkit_logging
     #utoolkit_threadpool
     #utoolkit_utils
     utoolkit_task_queue

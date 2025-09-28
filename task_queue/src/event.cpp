@@ -1,6 +1,6 @@
 #include "utoolkit/task_queue/event.h"
 #include <optional>
-
+#include <chrono>
 #ifdef _WIN32
 #include <windows.h>
 #include <sys/timeb.h>
@@ -9,12 +9,6 @@
 struct timeval {
     time_t tv_sec;  // 秒
     long   tv_usec; // 微秒
-};
-
-// Windows下没有默认的timespec定义
-struct timespec {
-    time_t tv_sec;  // 秒
-    long   tv_nsec; // 纳秒
 };
 
 #else
