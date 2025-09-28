@@ -12,6 +12,7 @@ add_library(utoolkit_logging STATIC ${LOGGING_SOURCES})
 
 target_include_directories(utoolkit_logging
     PUBLIC
+    ../third_party/spdlog/include
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include>
 )
@@ -33,7 +34,7 @@ install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/
 )
 
 # 示例
-option(LOGGING_BUILD_EXAMPLES "Build logging examples" OFF)
+option(LOGGING_BUILD_EXAMPLES "Build logging examples" ON)
 if(LOGGING_BUILD_EXAMPLES)
     add_subdirectory(examples)
 endif()

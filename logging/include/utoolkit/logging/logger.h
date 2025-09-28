@@ -1,63 +1,69 @@
-#pragma once
+﻿#pragma once
 
-#include <string>
 #include <memory>
-#include <fstream>
-#include <mutex>
-#include <chrono>
+#include <string>
+#include "spdlog/spdlog.h"
 
 namespace utoolkit {
 namespace logging {
 
-enum class LogLevel {
-    TRACE = 0,
-    DEBUG = 1,
-    INFO = 2,
-    WARN = 3,
-    ERROR = 4,
-    FATAL = 5
-};
-
 class Logger {
 public:
-    static Logger& instance();
-    
-    void set_log_level(LogLevel level);
-    void set_log_file(const std::string& filename);
-    void enable_console_output(bool enable);
-    
-    void log(LogLevel level, const std::string& message, 
-             const std::string& file = "", int line = 0);
-    
-    void trace(const std::string& message, const std::string& file = "", int line = 0);
-    void debug(const std::string& message, const std::string& file = "", int line = 0);
-    void info(const std::string& message, const std::string& file = "", int line = 0);
-    void warn(const std::string& message, const std::string& file = "", int line = 0);
-    void error(const std::string& message, const std::string& file = "", int line = 0);
-    void fatal(const std::string& message, const std::string& file = "", int line = 0);
+    static Logger& GetInstance();
+
+    void Initialize(const std::string& logger_name = "utoolkit_logger",
+                   const std::string& pattern = "[%Y-%m-%d %H:%M:%S.%e] [%n] [%^%l%$] [%t] %v",
+                   spdlog::level::level_enum level = spdlog::level::info);
+
+    void SetLevel(spdlog::level::level_enum level);
+    spdlog::level::level_enum GetLevel() const;
+
+    template<typename... Args>
+    void Trace(const char* fmt, const Args&... args) {
+        logger_->trace(fmt, args...);
+    }
+
+    template<typename... Args>
+    void Debug(const char* fmt, const Args&... args) {
+        logger_->debug(fmt, args...);
+    }
+
+    template<typename... Args>
+    void Info(const char* fmt, const Args&... args) {
+        logger_->info(fmt, args...);
+    }
+
+    template<typename... Args>
+    void Warn(const char* fmt, const Args&... args) {
+        logger_->warn(fmt, args...);
+    }
+
+    template<typename... Args>
+    void Error(const char* fmt, const Args&... args) {
+        logger_->error(fmt, args...);
+    }
+
+    template<typename... Args>
+    void Critical(const char* fmt, const Args&... args) {
+        logger_->critical(fmt, args...);
+    }
 
 private:
-    Logger();
-    ~Logger();
-    
+    Logger() = default;
+    ~Logger() = default;
     Logger(const Logger&) = delete;
     Logger& operator=(const Logger&) = delete;
-    
-    std::string level_to_string(LogLevel level);
-    std::string get_current_time();
-    
-    LogLevel current_level_;
-    std::ofstream log_file_;
-    std::mutex mutex_;
-    bool console_output_enabled_;
-};
 
-#define UT_TRACE(msg) utoolkit::logging::Logger::instance().trace(msg, __FILE__, __LINE__)
-#define UT_DEBUG(msg) utoolkit::logging::Logger::instance().debug(msg, __FILE__, __LINE__)
-#define UT_INFO(msg) utoolkit::logging::Logger::instance().info(msg, __FILE__, __LINE__)
-#define UT_WARN(msg) utoolkit::logging::Logger::instance().warn(msg, __FILE__, __LINE__)
-#define UT_ERROR(msg) utoolkit::logging::Logger::instance().error(msg, __FILE__, __LINE__)
-#define UT_FATAL(msg) utoolkit::logging::Logger::instance().fatal(msg, __FILE__, __LINE__)
+    std::shared_ptr<spdlog::logger> logger_;
+};
 
 } // namespace logging
 } // namespace utoolkit
+
+// 便捷宏定义
+#define UTOOLKIT_LOG_TRACE(...) utoolkit::logging::Logger::GetInstance().Trace(__VA_ARGS__)
+#define UTOOLKIT_LOG_DEBUG(...) utoolkit::logging::Logger::GetInstance().Debug(__VA_ARGS__)
+#define UTOOLKIT_LOG_INFO(...) utoolkit::logging::Logger::GetInstance().Info(__VA_ARGS__)
+#define UTOOLKIT_LOG_WARN(...) utoolkit::logging::Logger::GetInstance().Warn(__VA_ARGS__)
+#define UTOOLKIT_LOG_ERROR(...) utoolkit::logging::Logger::GetInstance().Error(__VA_ARGS__)
+#define UTOOLKIT_LOG_CRITICAL(...) utoolkit::logging::Logger::GetInstance().Critical(__VA_ARGS__)

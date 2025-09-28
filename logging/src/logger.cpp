@@ -1,122 +1,58 @@
-#include <utoolkit/logging/logger.h>
+#include "utoolkit/logging/logger.h"
+#include "spdlog/sinks/stdout_color_sinks.h"
+#include "spdlog/sinks/rotating_file_sink.h"
+#include "spdlog/common.h"
+
 #include <iostream>
-#include <iomanip>
-#include <ctime>
-#include <sstream>
+#include <vector>
 
 namespace utoolkit {
 namespace logging {
 
-Logger& Logger::instance() {
+Logger& Logger::GetInstance() {
     static Logger instance;
     return instance;
 }
 
-Logger::Logger() : current_level_(LogLevel::INFO), console_output_enabled_(true) {
-}
+void Logger::Initialize(const std::string& logger_name,
+                       const std::string& pattern,
+                       spdlog::level::level_enum level) {
+    try {
+        // Create console color sink
+        auto console_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
+        console_sink->set_pattern(pattern);
 
-Logger::~Logger() {
-    if (log_file_.is_open()) {
-        log_file_.close();
+        // Create file sink with rotation (max 10MB, keep 3 files)
+        auto file_sink = std::make_shared<spdlog::sinks::rotating_file_sink_mt>(
+            "logs/utoolkit.log", 1024 * 1024 * 10, 3);
+        file_sink->set_pattern(pattern);
+
+        // Create multi-sink logger
+        std::vector<spdlog::sink_ptr> sinks {console_sink, file_sink};
+        logger_ = std::make_shared<spdlog::logger>(logger_name, sinks.begin(), sinks.end());
+        
+        // Set log level
+        logger_->set_level(level);
+        
+        // Set as default logger
+        set_default_logger(logger_);
+        
+        logger_->info("Logger initialized successfully");
+    }
+    catch (const spdlog::spdlog_ex& ex) {
+        std::cerr << "Logger initialization failed: " << ex.what() << std::endl;
+        throw;
     }
 }
 
-void Logger::set_log_level(LogLevel level) {
-    current_level_ = level;
-}
-
-void Logger::set_log_file(const std::string& filename) {
-    std::lock_guard<std::mutex> lock(mutex_);
-    
-    if (log_file_.is_open()) {
-        log_file_.close();
-    }
-    
-    log_file_.open(filename, std::ios::app);
-    if (!log_file_.is_open()) {
-        std::cerr << "Failed to open log file: " << filename << std::endl;
+void Logger::SetLevel(spdlog::level::level_enum level) {
+    if (logger_) {
+        logger_->set_level(level);
     }
 }
 
-void Logger::enable_console_output(bool enable) {
-    console_output_enabled_ = enable;
-}
-
-void Logger::log(LogLevel level, const std::string& message, 
-                 const std::string& file, int line) {
-    if (level < current_level_) {
-        return;
-    }
-    
-    std::lock_guard<std::mutex> lock(mutex_);
-    
-    std::string log_entry = get_current_time() + " [" + level_to_string(level) + "] " + message;
-    
-    if (!file.empty()) {
-        log_entry += " (" + file;
-        if (line > 0) {
-            log_entry += ":" + std::to_string(line);
-        }
-        log_entry += ")";
-    }
-    
-    if (console_output_enabled_) {
-        std::cout << log_entry << std::endl;
-    }
-    
-    if (log_file_.is_open()) {
-        log_file_ << log_entry << std::endl;
-        log_file_.flush();
-    }
-}
-
-void Logger::trace(const std::string& message, const std::string& file, int line) {
-    log(LogLevel::TRACE, message, file, line);
-}
-
-void Logger::debug(const std::string& message, const std::string& file, int line) {
-    log(LogLevel::DEBUG, message, file, line);
-}
-
-void Logger::info(const std::string& message, const std::string& file, int line) {
-    log(LogLevel::INFO, message, file, line);
-}
-
-void Logger::warn(const std::string& message, const std::string& file, int line) {
-    log(LogLevel::WARN, message, file, line);
-}
-
-void Logger::error(const std::string& message, const std::string& file, int line) {
-    log(LogLevel::ERROR, message, file, line);
-}
-
-void Logger::fatal(const std::string& message, const std::string& file, int line) {
-    log(LogLevel::FATAL, message, file, line);
-}
-
-std::string Logger::level_to_string(LogLevel level) {
-    switch (level) {
-        case LogLevel::TRACE: return "TRACE";
-        case LogLevel::DEBUG: return "DEBUG";
-        case LogLevel::INFO: return "INFO";
-        case LogLevel::WARN: return "WARN";
-        case LogLevel::ERROR: return "ERROR";
-        case LogLevel::FATAL: return "FATAL";
-        default: return "UNKNOWN";
-    }
-}
-
-std::string Logger::get_current_time() {
-    auto now = std::chrono::system_clock::now();
-    auto time_t = std::chrono::system_clock::to_time_t(now);
-    auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(
-        now.time_since_epoch()) % 1000;
-    
-    std::stringstream ss;
-    ss << std::put_time(std::localtime(&time_t), "%Y-%m-%d %H:%M:%S");
-    ss << "." << std::setfill('0') << std::setw(3) << ms.count();
-    
-    return ss.str();
+spdlog::level::level_enum Logger::GetLevel() const {
+    return logger_ ? logger_->level() : spdlog::level::off;
 }
 
 } // namespace logging
