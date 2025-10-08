@@ -34,7 +34,7 @@ install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/
 )
 
 # 示例
-option(LOGGING_BUILD_EXAMPLES "Build logging examples" ON)
+option(LOGGING_BUILD_EXAMPLES "Build logging examples" OFF)
 if(LOGGING_BUILD_EXAMPLES)
     add_subdirectory(examples)
 endif()
