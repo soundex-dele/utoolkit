@@ -2,6 +2,8 @@
 
 #include <type_traits>
 #include <memory>
+#include <mutex>
+#include <condition_variable>
 
 namespace vi {
 
@@ -54,6 +56,43 @@ public:
 
 private:
     typename std::decay<Cleanup>::type cleanup_;
+};
+
+class SyncTaskWrapper : public QueuedTask {
+public:
+    SyncTaskWrapper(std::unique_ptr<QueuedTask> task, std::mutex* mutex, 
+                   std::condition_variable* cv, bool* done_flag)
+        : m_task(std::move(task)),
+          m_mutex(mutex),
+          m_cv(cv),
+          m_done_flag(done_flag) {
+    }
+
+    bool run() override {
+        bool release_original_task = false;
+        
+        if (m_task) {
+            release_original_task = m_task->run();
+        }
+        
+        {
+            std::unique_lock<std::mutex> lock(*m_mutex);
+            *m_done_flag = true;
+        }
+        m_cv->notify_one();
+        
+        if (release_original_task) {
+            m_task.reset();
+        }
+        
+        return true;
+    }
+
+private:
+    std::unique_ptr<QueuedTask> m_task;
+    std::mutex* m_mutex;
+    std::condition_variable* m_cv;
+    bool* m_done_flag;
 };
 
 }

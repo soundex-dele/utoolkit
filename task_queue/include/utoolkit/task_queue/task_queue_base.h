@@ -38,6 +38,11 @@ public:
     // and in some cases, such as on Windows when all high precision timers have
     // been used up, can be off by as much as 15 millseconds.
     virtual void postDelayedTask(std::unique_ptr<QueuedTask> task, uint32_t milliseconds) = 0;
+    
+    // Synchronously executes a task on the task queue.
+    // If called from the current task queue thread, the task is executed immediately.
+    // Otherwise, the task is posted to the queue and the caller blocks until the task completes.
+    virtual void postSyncTask(std::unique_ptr<QueuedTask> task) = 0;
 
     // Returns the task queue that is running the current thread.
     // Returns nullptr if this thread is not associated with any task queue.

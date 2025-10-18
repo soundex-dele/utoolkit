@@ -98,6 +98,17 @@ public:
     void postDelayedTask(Closure&& closure, uint32_t milliseconds) {
         postDelayedTask(ToQueuedTask(std::forward<Closure>(closure)),  milliseconds);
     }
+    
+    // Synchronously executes a task on the task queue.
+    // If called from the current task queue thread, the task is executed immediately.
+    // Otherwise, the task is posted to the queue and the caller blocks until the task completes.
+    void postSyncTask(std::unique_ptr<QueuedTask> task);
+    
+    // Template version of postSyncTask for convenience with lambdas and function objects.
+    template <class Closure, typename std::enable_if<!std::is_convertible<Closure, std::unique_ptr<QueuedTask>>::value>::type* = nullptr>
+    void postSyncTask(Closure&& closure) {
+        postSyncTask(ToQueuedTask(std::forward<Closure>(closure)));
+    }
 
 
 private:

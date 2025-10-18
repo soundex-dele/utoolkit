@@ -4,13 +4,6 @@
 #ifdef _WIN32
 #include <windows.h>
 #include <sys/timeb.h>
-
-// Windows下没有默认的timeval定义
-struct timeval {
-    time_t tv_sec;  // 秒
-    long   tv_usec; // 微秒
-};
-
 #else
 #include <sys/time.h>
 #endif

@@ -24,6 +24,8 @@ public:
     void postTask(std::unique_ptr<QueuedTask> task) override;
 
     void postDelayedTask(std::unique_ptr<QueuedTask> task, uint32_t milliseconds) override;
+    
+    void postSyncTask(std::unique_ptr<QueuedTask> task) override;
 
     const std::string& name() const override;
 

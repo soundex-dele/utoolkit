@@ -27,6 +27,10 @@ void TaskQueue::postDelayedTask(std::unique_ptr<QueuedTask> task, uint32_t milli
     return impl_->postDelayedTask(std::move(task), milliseconds);
 }
 
+void TaskQueue::postSyncTask(std::unique_ptr<QueuedTask> task) {
+    return impl_->postSyncTask(std::move(task));
+}
+
 std::unique_ptr<TaskQueue> TaskQueue::create(std::string_view name) {
     return std::make_unique<TaskQueue>(std::unique_ptr<TaskQueueBase, TaskQueueDeleter>(new TaskQueueSTD(name)));
 }

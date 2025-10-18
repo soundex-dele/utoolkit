@@ -1,7 +1,6 @@
 #include "utoolkit/task_queue/task_queue_std.h"
 #include <assert.h>
 #include <chrono>
-
 #ifdef _WIN32
 #include <windows.h>
 #endif
@@ -142,6 +141,28 @@ void TaskQueueSTD::processTasks() {
     }
 
     stopped_.set();
+}
+
+void TaskQueueSTD::postSyncTask(std::unique_ptr<QueuedTask> task) {
+    if (isCurrent()) {
+        QueuedTask* release_ptr = task.release();
+        if (release_ptr->run()) {
+            delete release_ptr;
+        }
+        return;
+    }
+    
+    std::mutex done_mutex;
+    std::condition_variable done_cv;
+    bool done = false;
+    
+    auto wrapper_task = std::make_unique<SyncTaskWrapper>(
+        std::move(task), &done_mutex, &done_cv, &done);
+    
+    postTask(std::move(wrapper_task));
+    
+    std::unique_lock<std::mutex> lock(done_mutex);
+    done_cv.wait(lock, [&done] { return done; });
 }
 
 void TaskQueueSTD::notifyWake() {
