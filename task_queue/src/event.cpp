@@ -4,6 +4,8 @@
 #ifdef _WIN32
 #include <windows.h>
 #include <sys/timeb.h>
+// 在Windows上定义timeval结构体
+#include <winsock2.h>
 #else
 #include <sys/time.h>
 #endif
