@@ -7,7 +7,7 @@
 
 namespace vi {
 
-TaskQueueSTD::TaskQueueSTD(std::string_view queueName)
+TaskQueueSTD::TaskQueueSTD(const std::string& queueName)
     : started_(/*manual_reset=*/false, /*initially_signaled=*/false)
     , stopped_(/*manual_reset=*/false, /*initially_signaled=*/false)
     , flag_notify_(/*manual_reset=*/false, /*initially_signaled=*/false)

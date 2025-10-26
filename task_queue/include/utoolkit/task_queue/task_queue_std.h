@@ -7,7 +7,6 @@
 #include <queue>
 #include <utility>
 #include <thread>
-#include <string_view>
 #include "queued_task.h"
 #include "event.h"
 #include "task_queue_base.h"
@@ -16,7 +15,7 @@ namespace vi {
 
 class TaskQueueSTD final : public TaskQueueBase {
 public:
-    TaskQueueSTD(std::string_view queueName);
+    TaskQueueSTD(const std::string& queueName);
     ~TaskQueueSTD() override = default;
 
     void deleteThis() override;

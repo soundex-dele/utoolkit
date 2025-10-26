@@ -31,7 +31,7 @@ void TaskQueue::postSyncTask(std::unique_ptr<QueuedTask> task) {
     return impl_->postSyncTask(std::move(task));
 }
 
-std::unique_ptr<TaskQueue> TaskQueue::create(std::string_view name) {
+std::unique_ptr<TaskQueue> TaskQueue::create(const std::string& name) {
     return std::make_unique<TaskQueue>(std::unique_ptr<TaskQueueBase, TaskQueueDeleter>(new TaskQueueSTD(name)));
 }
 

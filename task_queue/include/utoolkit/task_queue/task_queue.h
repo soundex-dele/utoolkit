@@ -3,7 +3,6 @@
 #include <stdint.h>
 
 #include <memory>
-#include <string_view>
 #include "queued_task.h"
 
 
@@ -64,7 +63,7 @@ public:
     explicit TaskQueue(std::unique_ptr<TaskQueueBase, TaskQueueDeleter> taskQueue);
     ~TaskQueue();
 
-    static std::unique_ptr<TaskQueue> create(std::string_view name);
+    static std::unique_ptr<TaskQueue> create(const std::string& name);
 
     // Used for DCHECKing the current queue.
     bool isCurrent() const;
