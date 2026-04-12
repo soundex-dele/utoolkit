@@ -1,5 +1,7 @@
 #include <utoolkit/threadpool/threadpool.h>
 #include <stdexcept>
+#include <iostream>
+#include <exception>
 
 namespace utoolkit {
 namespace threadpool {
@@ -52,23 +54,30 @@ bool ThreadPool::is_shutdown() const {
 void ThreadPool::worker_thread() {
     while (true) {
         std::function<void()> task;
-        
+
         {
             std::unique_lock<std::mutex> lock(queue_mutex_);
-            
+
             condition_.wait(lock, [this] {
                 return stop_ || !tasks_.empty();
             });
-            
+
             if (stop_ && tasks_.empty()) {
                 return;
             }
-            
+
             task = std::move(tasks_.front());
             tasks_.pop();
         }
-        
-        task();
+
+        // 添加异常处理，防止任务崩溃导致线程死亡和锁泄漏
+        try {
+            task();
+        } catch (const std::exception& e) {
+            std::cerr << "[ThreadPool] Task threw exception: " << e.what() << std::endl;
+        } catch (...) {
+            std::cerr << "[ThreadPool] Task threw unknown exception" << std::endl;
+        }
     }
 }
 
