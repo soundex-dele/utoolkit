@@ -5,6 +5,7 @@
 #include <iostream>
 #include <vector>
 #include <memory>
+#include <mutex>
 
 namespace utoolkit {
 namespace logging {
@@ -22,6 +23,7 @@ public:
     void Initialize(const std::string& logger_name, 
                    const std::string& pattern, 
                    LogLevel level) {
+        std::lock_guard<std::mutex> lock(mutex_);
         try {
             // 创建控制台颜色接收器
             auto console_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
@@ -51,12 +53,14 @@ public:
     }
 
     void SetLevel(LogLevel level) {
+        std::lock_guard<std::mutex> lock(mutex_);
         if (logger_) {
             logger_->set_level(ToSpdlogLevel(level));
         }
     }
 
     LogLevel GetLevel() const {
+        std::lock_guard<std::mutex> lock(mutex_);
         if (logger_) {
             return FromSpdlogLevel(logger_->level());
         }
@@ -65,6 +69,7 @@ public:
 
     template<typename... Args>
     void Trace(const char* fmt, const Args&... args) {
+        std::lock_guard<std::mutex> lock(mutex_);
         if (logger_) {
             logger_->trace(fmt, args...);
         }
@@ -72,6 +77,7 @@ public:
 
     template<typename... Args>
     void Debug(const char* fmt, const Args&... args) {
+        std::lock_guard<std::mutex> lock(mutex_);
         if (logger_) {
             logger_->debug(fmt, args...);
         }
@@ -79,6 +85,7 @@ public:
 
     template<typename... Args>
     void Info(const char* fmt, const Args&... args) {
+        std::lock_guard<std::mutex> lock(mutex_);
         if (logger_) {
             logger_->info(fmt, args...);
         }
@@ -86,6 +93,7 @@ public:
 
     template<typename... Args>
     void Warn(const char* fmt, const Args&... args) {
+        std::lock_guard<std::mutex> lock(mutex_);
         if (logger_) {
             logger_->warn(fmt, args...);
         }
@@ -93,6 +101,7 @@ public:
 
     template<typename... Args>
     void Error(const char* fmt, const Args&... args) {
+        std::lock_guard<std::mutex> lock(mutex_);
         if (logger_) {
             logger_->error(fmt, args...);
         }
@@ -100,12 +109,14 @@ public:
 
     template<typename... Args>
     void Critical(const char* fmt, const Args&... args) {
+        std::lock_guard<std::mutex> lock(mutex_);
         if (logger_) {
             logger_->critical(fmt, args...);
         }
     }
 
 private:
+    mutable std::mutex mutex_;
     std::shared_ptr<spdlog::logger> logger_;
 
     // 转换内部LogLevel到spdlog的level_enum
@@ -149,6 +160,8 @@ private:
     }
 };
 
+Logger::Logger() : impl_(std::make_shared<Impl>()) {}
+
 Logger& Logger::GetInstance() {
     static Logger instance;
     return instance;
@@ -158,9 +171,6 @@ Logger& Logger::GetInstance() {
 void Logger::Initialize(const std::string& logger_name, 
                        const std::string& pattern, 
                        LogLevel level) {
-    if (!impl_) {
-        impl_ = std::make_shared<Impl>();
-    }
     impl_->Initialize(logger_name, pattern, level);
 }
 

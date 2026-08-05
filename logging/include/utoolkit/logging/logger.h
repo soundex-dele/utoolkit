@@ -40,7 +40,7 @@ public:
     void Critical(const char* msg);
 
 private:
-    Logger() = default;
+    Logger();
     ~Logger() = default;
     Logger(const Logger&) = delete;
     Logger& operator=(const Logger&) = delete;
