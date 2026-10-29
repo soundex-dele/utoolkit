@@ -25,13 +25,13 @@ Event::~Event() {
 }
 
 void Event::set() {
-    std::unique_lock<std::mutex>(event_mutex_);
+    std::unique_lock<std::mutex> lock(event_mutex_);
     event_status_ = true;
     event_cond_.notify_all();
 }
 
 void Event::reset() {
-    std::unique_lock<std::mutex>(event_mutex_);
+    std::unique_lock<std::mutex> lock(event_mutex_);
     event_status_ = false;
 }
 

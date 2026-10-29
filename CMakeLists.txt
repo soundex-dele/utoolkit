@@ -21,7 +21,9 @@ option(UTOOLKIT_INSTALL "Enable installation" ON)
 add_subdirectory(logging)
 add_subdirectory(threadpool)
 # add_subdirectory(utils)
-add_subdirectory(task_queue)
+if(NOT TARGET utoolkit_task_queue)
+    add_subdirectory(task_queue)
+endif()
 
 # 主库 - 头文件集合
 add_library(utoolkit INTERFACE)

@@ -31,6 +31,9 @@ target_include_directories(utoolkit_task_queue
 
 # 设置C++标准
 target_compile_features(utoolkit_task_queue PRIVATE cxx_std_17)
+if(WIN32)
+    target_compile_definitions(utoolkit_task_queue PRIVATE WIN32_LEAN_AND_MEAN NOMINMAX)
+endif()
 
 # 安装规则
 install(TARGETS utoolkit_task_queue
